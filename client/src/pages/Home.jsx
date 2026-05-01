@@ -1,7 +1,26 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import api from '../services/api';
 
 const Home = () => {
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const { data } = await api.get('/posts');
+        setPosts(data.data.posts);
+      } catch (error) {
+        console.error('Failed to fetch posts', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -37,61 +56,54 @@ const Home = () => {
           <h2 style={{ marginBottom: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>
             Latest Posts
           </h2>
-          {[
-            {
-              id: 1,
-              title: "The Future of Web Development in 2026",
-              author: "Jane Doe",
-              avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
-              image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=400",
-              tag: "Technology"
-            },
-            {
-              id: 2,
-              title: "How I Built a Million Dollar SaaS in 6 Months",
-              author: "John Smith",
-              avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150",
-              image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=400",
-              tag: "Business"
-            },
-            {
-              id: 3,
-              title: "Understanding the New React Compiler",
-              author: "Sarah Johnson",
-              avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150",
-              image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=400",
-              tag: "Programming"
-            }
-          ].map((item) => (
-            <div key={item.id} style={{ marginBottom: '3rem', display: 'flex', gap: '2rem' }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                  <img src={item.avatar} alt={item.author} style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
-                  <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>{item.author}</span>
-                  <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>• Jan 5, 2026</span>
+          {isLoading ? (
+            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>Loading posts...</div>
+          ) : posts.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>No posts yet. Be the first to write one!</div>
+          ) : (
+            posts.map((post) => (
+              <div key={post._id} style={{ marginBottom: '3rem', display: 'flex', gap: '2rem' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                    <img 
+                      src={`https://ui-avatars.com/api/?name=${post.author?.name || 'User'}&background=random`} 
+                      alt={post.author?.name} 
+                      style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} 
+                    />
+                    <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>{post.author?.name || 'Unknown'}</span>
+                    <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                      • {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                  </div>
+                  <Link to={`/post/${post._id}`}>
+                    <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', fontWeight: 800 }}>
+                      {post.title}
+                    </h3>
+                    <div 
+                      style={{ color: 'var(--text-secondary)', marginBottom: '1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                      dangerouslySetInnerHTML={{ __html: post.content }}
+                    />
+                  </Link>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                    {post.tags && post.tags.length > 0 && (
+                      <span style={{ background: 'var(--bg-secondary)', padding: '0.25rem 0.75rem', borderRadius: '9999px' }}>
+                        {post.tags[0].name || post.tags[0]}
+                      </span>
+                    )}
+                    <span>{Math.max(1, Math.ceil((post.content?.length || 0) / 1000))} min read</span>
+                  </div>
                 </div>
-                <Link to={`/post/${item.id}`}>
-                  <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', fontWeight: 800 }}>
-                    {item.title}
-                  </h3>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                    A deep dive into how AI, new frameworks, and web assembly are shaping the next generation of web applications. Exploring the tools that will dominate the landscape.
-                  </p>
+                {/* Optional thumbnail image if we add images to posts later, using a random unsplash for now based on title length as a seed */}
+                <Link to={`/post/${post._id}`}>
+                  <img 
+                    src={`https://images.unsplash.com/photo-${(post.title.length % 2 === 0) ? '1555066931-4365d14bab8c' : '1460925895917-afdab827c52f'}?auto=format&fit=crop&q=80&w=400`}
+                    alt={post.title}
+                    style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '8px' }} 
+                  />
                 </Link>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                  <span style={{ background: 'var(--bg-secondary)', padding: '0.25rem 0.75rem', borderRadius: '9999px' }}>{item.tag}</span>
-                  <span>5 min read</span>
-                </div>
               </div>
-              <Link to={`/post/${item.id}`}>
-                <img 
-                  src={item.image} 
-                  alt={item.title}
-                  style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '8px' }} 
-                />
-              </Link>
-            </div>
-          ))}
+            ))
+          )}
         </div>
         
         <div style={{ display: 'none', '@media(minWidth: 1024px)': { display: 'block' } }}>
@@ -103,7 +115,8 @@ const Home = () => {
                 padding: '0.5rem 1rem', 
                 borderRadius: '9999px',
                 fontSize: '0.875rem',
-                color: 'var(--text-secondary)'
+                color: 'var(--text-secondary)',
+                cursor: 'pointer'
               }}>
                 {tag}
               </span>

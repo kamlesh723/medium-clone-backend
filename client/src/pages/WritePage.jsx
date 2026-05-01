@@ -1,18 +1,36 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.bubble.css';
 import { motion } from 'framer-motion';
 import TagInput from '../components/editor/TagInput';
+import api from '../services/api';
 
 const WritePage = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tags, setTags] = useState([]);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const navigate = useNavigate();
 
-  const handlePublish = (e) => {
+  const handlePublish = async (e) => {
     e.preventDefault();
-    console.log({ title, content, tags, status: 'published' });
-    // TODO: Wire to API
+    if (!title || !content) return alert('Title and content are required');
+    
+    setIsPublishing(true);
+    try {
+      const { data } = await api.post('/posts', {
+        title,
+        content,
+        tags,
+        status: 'published'
+      });
+      navigate(`/post/${data.data.post._id}`);
+    } catch (error) {
+      console.error('Failed to publish', error);
+      alert(error.response?.data?.message || 'Failed to publish post');
+      setIsPublishing(false);
+    }
   };
 
   return (
@@ -23,7 +41,9 @@ const WritePage = () => {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <p style={{ color: 'var(--text-secondary)' }}>Draft in {title || 'Untitled'}</p>
-        <button onClick={handlePublish} className="btn-primary">Publish</button>
+        <button onClick={handlePublish} disabled={isPublishing} className="btn-primary" style={{ opacity: isPublishing ? 0.7 : 1 }}>
+          {isPublishing ? 'Publishing...' : 'Publish'}
+        </button>
       </div>
 
       <input
