@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-const AuthForm = ({ type, onSubmit }) => {
+const AuthForm = ({ type, onSubmit, error, isLoading }) => {
   const isLogin = type === 'login';
   const [formData, setFormData] = useState({
     name: '',
@@ -107,9 +107,10 @@ const AuthForm = ({ type, onSubmit }) => {
             />
           </div>
 
-          <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', marginTop: '1rem' }}>
-            {isLogin ? 'Sign In' : 'Create Account'}
+          <button type="submit" className="btn-primary" disabled={isLoading} style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', marginTop: '1rem', opacity: isLoading ? 0.7 : 1 }}>
+            {isLoading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
           </button>
+          {error && <p style={{ color: '#ef4444', textAlign: 'center', fontSize: '0.875rem' }}>{error}</p>}
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>

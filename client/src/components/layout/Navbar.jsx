@@ -1,9 +1,15 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Edit, User, LogOut } from 'lucide-react';
+import useAuthStore from '../../store/authStore';
 
 const Navbar = () => {
-  // Temporary mock auth state for preview
-  const isAuthenticated = true;
+  const { isAuthenticated, logout } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <nav style={{
@@ -56,7 +62,7 @@ const Navbar = () => {
           
           {isAuthenticated ? (
             <>
-              <button style={{ color: 'var(--text-secondary)' }}>
+              <button onClick={handleLogout} style={{ color: 'var(--text-secondary)' }}>
                 <LogOut size={20} />
               </button>
               <Link to="/profile/me">
