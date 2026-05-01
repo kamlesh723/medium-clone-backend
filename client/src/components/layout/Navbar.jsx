@@ -28,14 +28,22 @@ const Navbar = () => {
             <input 
               type="text" 
               placeholder="Search..." 
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.target.value.trim()) {
+                  window.location.href = `/search?q=${e.target.value.trim()}`;
+                }
+              }}
               style={{
                 background: 'var(--bg-secondary)',
-                border: 'none',
+                border: '1px solid transparent',
                 padding: '0.5rem 1rem',
                 borderRadius: '9999px',
                 outline: 'none',
-                width: '200px'
+                width: '240px',
+                transition: 'border-color 0.2s ease'
               }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--accent)'}
+              onBlur={(e) => e.target.style.borderColor = 'transparent'}
             />
           </div>
         </div>
