@@ -4,6 +4,8 @@ import Home from './pages/Home';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ArticlePage from './pages/ArticlePage';
+import WritePage from './pages/WritePage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="post/:id" element={<ArticlePage />} />
+          <Route path="write" element={<WritePage />} />
+          <Route path="profile/me" element={<ProfilePage />} />
           <Route path="*" element={<div>Page Not Found</div>} />
         </Route>
       </Routes>

@@ -3,7 +3,7 @@ import { Edit, User, LogOut } from 'lucide-react';
 
 const Navbar = () => {
   // Temporary mock auth state for preview
-  const isAuthenticated = false;
+  const isAuthenticated = true;
 
   return (
     <nav style={{
