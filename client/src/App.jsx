@@ -6,6 +6,8 @@ import RegisterPage from './pages/RegisterPage';
 import ArticlePage from './pages/ArticlePage';
 import WritePage from './pages/WritePage';
 import ProfilePage from './pages/ProfilePage';
+import SearchPage from './pages/SearchPage';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
           <Route path="post/:id" element={<ArticlePage />} />
           <Route path="write" element={<WritePage />} />
           <Route path="profile/me" element={<ProfilePage />} />
+          <Route path="search" element={<SearchPage />} />
+          <Route path="admin/users" element={<AdminDashboard />} />
           <Route path="*" element={<div>Page Not Found</div>} />
         </Route>
       </Routes>
