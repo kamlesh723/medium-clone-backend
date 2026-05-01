@@ -15,7 +15,7 @@ const updateUserRole = async(req,res)=>{
         const {id} = req.params;//will have to pass in url the id
         const {role} = req.body;
 
-        if(!(["user","moderator","admin"])){
+        if(!["user","moderator","admin"].includes(role)){
             return res.status(400).json({message:"Invalid Role. Must be: user, moderator, or admin"})
         }
         const user = await User.findById(id);
@@ -25,7 +25,7 @@ const updateUserRole = async(req,res)=>{
         }
 
         // you yourself as whatver you are shouln't be able to change your role
-        if(user._id.toString() === req.user._id.toString){
+        if(user._id.toString() === req.user._id.toString()){
             return res.status(400).json({message:"you can't change your own Role"})
         }
         user.role = role;
@@ -53,7 +53,7 @@ const softDeleteUser = async (req,res)=>{
         if(!user){
             return res.status(404).json({message:"User not found"});
         }
-         if(user._id.toString() === req.user._id.toString){
+         if(user._id.toString() === req.user._id.toString()){
             return res.status(400).json(
                 {message:"you can not Delete yourself "})
         }

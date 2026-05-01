@@ -14,7 +14,8 @@ const createPost = async(req,res)=>{
             title,
             content,
             author:req.user._id,// this id will be from token verifytoken
-            status:status ||"draft"
+            status:status ||"draft",
+            tags: tagIds
         });
         return res.status(201).json({
             message:"Post Created Succesfuly",
@@ -172,7 +173,7 @@ const searchPosts = async(req,res)=>{
 const getMyPosts = async(req,res)=>{
     try {
         const posts = await Post.find({
-            auhtor:req.user,_id,
+            author:req.user._id,
             isActive:true
         }).sort({createdAt:-1});// -1 mean neweast first
         return res.json({posts});

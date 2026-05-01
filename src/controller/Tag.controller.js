@@ -40,7 +40,7 @@ const processTags = async(tags=[])=>{
             isActive:true,
             status:"published"
         })
-        .populate("auhtor","name email")
+        .populate("author","name email")
         .populate("tags","name")
         .sort({createdAt:-1})
 

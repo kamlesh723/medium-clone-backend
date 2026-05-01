@@ -53,7 +53,7 @@ const clapPost = async(req,res)=>{
 
 const getPostClaps = async(req,res)=>{
      try {
-        const {postId} = req.body;
+        const {postId} = req.params;
 
         if(!mongoose.Types.ObjectId.isValid(postId)){
             return res.status(400).json({message:"Invalid Post ID"})

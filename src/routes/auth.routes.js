@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { register, login } = require("../controller/auth.controller");
+const { register, login, getMe } = require("../controller/auth.controller");
+const { verifyToken } = require("../middlewares/auth.middlesware");
 
 /**
  * @swagger
@@ -89,7 +90,7 @@ router.post("/register", register);
  *                 example: password123
  *     responses:
  *       200:
- *         description: Login successful - Returns JWT token
+ *         description: Login successful - Returns JWT token and user data
  *         content:
  *           application/json:
  *             schema:
@@ -97,7 +98,18 @@ router.post("/register", register);
  *               properties:
  *                 token:
  *                   type: string
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ODkxMjM0NTY3ODkwYWJjZGVmMTIzNCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzM3NzI4MDAwLCJleHAiOjE3Mzc4MTQ0MDB9.abcdefghijklmnopqrstuvwxyz123456789
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     role:
+ *                       type: string
  *       400:
  *         description: Invalid credentials
  *         content:
@@ -112,5 +124,37 @@ router.post("/register", register);
  *         description: Server error
  */
 router.post("/login", login);
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: Get current logged-in user profile
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     role:
+ *                       type: string
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ */
+router.get("/me", verifyToken, getMe);
 
 module.exports = router;

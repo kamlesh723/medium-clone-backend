@@ -9,7 +9,7 @@ const followUser = async(req,res)=>{
         if(!mongoose.Types.ObjectId.isValid(userId)){
             return res.status(400).json({message:"Invalid User id"})
         }
-        if(userId = req.user._id.toString()){
+        if(userId === req.user._id.toString()){
             return res.status(400).json({message:"you cannot follow yourself"})
         }
 

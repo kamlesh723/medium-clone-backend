@@ -61,7 +61,15 @@ const login = async(req, res)=>{
         },
         process.env.JWT_SECRET,{expiresIn:"1d"}
     );
-    return res.json({token});
+    return res.json({
+        token,
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role
+        }
+    });
 
     }catch(error){
         console.log("login Error:",error.message);
@@ -71,7 +79,25 @@ const login = async(req, res)=>{
     }
 }
 
+const getMe = async(req, res) => {
+    try {
+        // req.user is already set by verifyToken middleware (password excluded)
+        return res.json({
+            user: {
+                id: req.user._id,
+                name: req.user.name,
+                email: req.user.email,
+                role: req.user.role
+            }
+        });
+    } catch(error) {
+        console.log("getMe Error:", error.message);
+        return res.status(500).json({ message: "Server Error" });
+    }
+}
+
 module.exports = {
     register,
-    login
+    login,
+    getMe
 }
